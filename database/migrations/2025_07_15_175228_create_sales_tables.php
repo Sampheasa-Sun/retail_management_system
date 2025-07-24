@@ -11,25 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Main sales order table
         Schema::create('sales_order', function (Blueprint $table) {
-            $table->id('sales_id');
-            $table->foreignId('employee_id')->constrained('employees', 'employee_id');
-            $table->timestamp('sale_date')->useCurrent();
-            $table->decimal('total_amount', 10, 2);
+            $table->id();
+            // This is the corrected line: It links to the 'users' table.
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->decimal('total', 10, 2);
             $table->timestamps();
         });
 
-        // Sale order detail table (line items)
-        Schema::create('sale_order_detail', function (Blueprint $table) {
-            $table->foreignId('sales_id')->constrained('sales_order', 'sales_id')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products', 'product_id');
+        Schema::create('sales_order_detail', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('sales_order_id')->constrained('sales_order')->onDelete('cascade');
+            $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->integer('quantity');
-            $table->decimal('price_at_sale', 10, 2);
-            $table->decimal('discount_amount', 10, 2)->default(0);
-
-            // Define a composite primary key
-            $table->primary(['sales_id', 'product_id']);
+            $table->decimal('price', 10, 2);
+            $table->timestamps();
         });
     }
 
@@ -38,7 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sale_order_detail');
+        Schema::dropIfExists('sales_order_detail');
         Schema::dropIfExists('sales_order');
     }
 };

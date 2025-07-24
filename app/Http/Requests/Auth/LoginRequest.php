@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User; // Import the User model
 
 class LoginRequest extends FormRequest
 {
@@ -22,7 +23,7 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
     {
@@ -41,6 +42,9 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // --- Start of our custom logic ---
+        
+        // First, check if the user's credentials are correct
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
@@ -48,6 +52,20 @@ class LoginRequest extends FormRequest
                 'email' => trans('auth.failed'),
             ]);
         }
+        
+        // If credentials are correct, now check if the user is active
+        $user = Auth::user();
+        if (!$user->is_active) {
+            // If the user is not active, log them out immediately
+            Auth::logout();
+
+            // And throw an error telling them their account is paused
+            throw ValidationException::withMessages([
+                'email' => 'Your account has been paused. Please contact the administrator.',
+            ]);
+        }
+
+        // --- End of our custom logic ---
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -80,6 +98,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
     }
 }

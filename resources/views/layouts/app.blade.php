@@ -32,5 +32,8 @@
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- This will load any scripts pushed from child views --}}
+        @stack('scripts')
     </body>
 </html>

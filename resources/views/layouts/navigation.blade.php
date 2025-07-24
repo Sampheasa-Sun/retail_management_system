@@ -12,12 +12,41 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+                    @auth
+                        {{-- Links for Admins --}}
+                        @if(Auth::user()->role == 'admin')
+                            <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
+                                {{ __('Products') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.index')">
+                                {{ __('Sales Reports') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                                {{ __('Manage Employees') }}
+                            </x-nav-link>
+                            {{-- New Link for Product Log --}}
+                            <x-nav-link :href="route('product-logs.index')" :active="request()->routeIs('product-logs.index')">
+                                {{ __('Product Log') }}
+                            </x-nav-link>
+                        
+                        {{-- Links for Employees --}}
+                        @elseif(Auth::user()->role == 'employee')
+                            <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('sales.create')" :active="request()->routeIs('sales.create')">
+                                {{ __('New Sale') }}
+                            </x-nav-link>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
+            {{-- ... The rest of the file (Settings Dropdown, Hamburger, etc.) remains the same ... --}}
+            
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
@@ -67,9 +96,36 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+             @auth
+                {{-- Links for Admins --}}
+                @if(Auth::user()->role == 'admin')
+                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.index')">
+                        {{ __('Products') }}
+                    </x-responsive-nav-link>
+                     <x-responsive-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.index')">
+                        {{ __('Sales Reports') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
+                        {{ __('Manage Employees') }}
+                    </x-responsive-nav-link>
+                    {{-- New Link for Product Log (Mobile) --}}
+                    <x-responsive-nav-link :href="route('product-logs.index')" :active="request()->routeIs('product-logs.index')">
+                        {{ __('Product Log') }}
+                    </x-responsive-nav-link>
+                
+                {{-- Links for Employees --}}
+                @elseif(Auth::user()->role == 'employee')
+                    <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('sales.create')" :active="request()->routeIs('sales.create')">
+                        {{ __('New Sale') }}
+                    </x-responsive-nav-link>
+                @endif
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->

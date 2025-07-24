@@ -10,27 +10,20 @@ class ProductLog extends Model
     use HasFactory;
 
     protected $table = 'product_log';
-    protected $primaryKey = 'log_id';
-
-    // Tell Laravel to use 'log_date' instead of the default 'created_at' and 'updated_at'
-    const CREATED_AT = 'log_date';
-    const UPDATED_AT = null; // No 'updated_at' column in this table
-
-    protected $fillable = [
-        'product_id',
-        'action_type',
-        'details',
-    ];
-
-    protected $casts = [
-        'log_date' => 'datetime',
-    ];
 
     /**
-     * Get the product that the log entry belongs to.
+     * Get the user (employee) who made the change.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the product that was changed.
      */
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'product_id');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }
