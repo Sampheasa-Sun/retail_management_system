@@ -33,27 +33,18 @@
                         @csrf
                         <input type="hidden" name="action" x-ref="actionInput">
                         
-                        {{-- This is the new Bulk Actions dropdown --}}
                         <div class="mb-4 flex items-center">
                             <x-dropdown align="left" width="48">
                                 <x-slot name="trigger">
                                     <button type="button" :disabled="selectedUsers.length === 0" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                         Bulk Actions
-                                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                        </svg>
+                                        <svg class="ms-2 -me-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
                                     </button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-dropdown-link href="#" @click.prevent="$refs.actionInput.value='activate'; $refs.bulkActionForm.submit();">
-                                        Activate Selected
-                                    </x-dropdown-link>
-                                    <x-dropdown-link href="#" @click.prevent="$refs.actionInput.value='pause'; $refs.bulkActionForm.submit();">
-                                        Pause Selected
-                                    </x-dropdown-link>
-                                    <x-dropdown-link href="#" @click.prevent="if(confirm('Are you sure you want to delete the selected employees?')) { $refs.actionInput.value='delete'; $refs.bulkActionForm.submit(); }" class="text-red-600">
-                                        Delete Selected
-                                    </x-dropdown-link>
+                                    <x-dropdown-link href="#" @click.prevent="$refs.actionInput.value='activate'; $refs.bulkActionForm.submit();">Activate Selected</x-dropdown-link>
+                                    <x-dropdown-link href="#" @click.prevent="$refs.actionInput.value='pause'; $refs.bulkActionForm.submit();">Pause Selected</x-dropdown-link>
+                                    <x-dropdown-link href="#" @click.prevent="if(confirm('Are you sure you want to delete the selected employees?')) { $refs.actionInput.value='delete'; $refs.bulkActionForm.submit(); }" class="text-red-600">Delete Selected</x-dropdown-link>
                                 </x-slot>
                             </x-dropdown>
                             <span x-show="selectedUsers.length > 0" class="ml-3 text-sm text-gray-500" x-text="selectedUsers.length + ' user(s) selected'"></span>
@@ -62,14 +53,12 @@
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    {{-- The header checkbox has been removed, but the column is kept for alignment --}}
-                                    <th scope="col" class="p-4">
-                                        <span class="sr-only">Select</span>
-                                    </th>
+                                    <th scope="col" class="p-4"><span class="sr-only">Select</span></th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -88,10 +77,13 @@
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Paused</span>
                                             @endif
                                         </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <a href="{{ route('users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200">Edit</a>
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">No other users found.</td>
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">No other users found.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

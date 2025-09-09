@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -48,6 +49,38 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for editing the specified user.
+     */
+    public function edit(User $user)
+    {
+        return view('users.edit', ['user' => $user]);
+    }
+
+    /**
+     * Update the specified user in storage.
+     */
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // Only update the password if a new one was entered
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('users.index')->with('success', 'Employee account updated successfully.');
+    }
+
+    /**
      * Handle bulk actions on users.
      */
     public function handleBulkActions(Request $request)
@@ -61,7 +94,6 @@ class UserController extends Controller
         $userIds = $request->input('user_ids');
         $action = $request->input('action');
         
-        // Ensure the admin cannot perform actions on their own account in bulk
         $userIds = array_diff($userIds, [auth()->id()]);
 
         if (empty($userIds)) {

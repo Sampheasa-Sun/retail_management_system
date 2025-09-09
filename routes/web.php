@@ -6,7 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProductLogController; // <-- Add this import
+use App\Http\Controllers\ProductLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+        Route::get('/product-logs', [ProductLogController::class, 'index'])->name('product-logs.index');
         
         // User management routes
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -39,8 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/users', [UserController::class, 'store'])->name('users.store');
         Route::post('/users/bulk-actions', [UserController::class, 'handleBulkActions'])->name('users.bulkActions');
 
-        // New route for the product log
-        Route::get('/product-logs', [ProductLogController::class, 'index'])->name('product-logs.index');
+        // New routes for editing and updating users
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::patch('/users/{user}', [UserController::class, 'update'])->name('users.update');
     });
 
     // --- Employee-only routes ---
